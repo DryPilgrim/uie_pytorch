@@ -1,0 +1,9 @@
+[{'关注数': [{'end': 2256,
+           'probability': 0.4322643,
+           'start': 2251,
+           'text': '3425万'}],
+  '用户名': [{'end': 19,
+           'probability': 0.48924676,
+           'start': 10,
+           'text': 'cuiyunnan'}],
+  '简介': [{'end': 4047, 'probability': 0.5862237, 'start': 4045, 'text': '公司'}]}]

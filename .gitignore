@@ -129,3 +129,4 @@ data/*
 export
 model_best
 uie-base
+uie_base_pytorch
