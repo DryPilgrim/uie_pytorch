@@ -28,6 +28,9 @@ def evaluate_authority(host_publicity, host_focus):
 # print(evaluate_authority(calculate_publicity(4),0.58))
 
 def sql():
+    """
+    构造不同的url,方便从数据库中sql数据
+    """
     import pandas as pd
     df = pd.read_excel('authority_mannual.xlsx')['host']
     values = df.values
@@ -43,6 +46,9 @@ def sql():
     print(values_procc)
 
 def merge_feature():
+    """
+    从数据库中提取、构造特征
+    """
     import pandas as pd
     import numpy as np
 
@@ -134,8 +140,11 @@ def merge_feature():
     print(df_3df['industry_4'][:10])
 
 def get_score():
+    """
+    获取特征score
+    """
     import pandas as pd
-    df_mannual=pd.read_excel('/Users/renyu/Desktop/authority_mannual.xlsx')
+    df_mannual=pd.read_csv('/Users/renyu/Desktop/authority_mannual_drop_duplicates.csv')
     df_feature=pd.read_csv('/Users/renyu/Desktop/merge_outer_3df_pre6.csv')
     
     merged = pd.merge(df_feature,df_mannual,on='host',how='outer')
@@ -145,4 +154,84 @@ def get_score():
 
 
 # merge_feature()
-get_score()
+# get_score()
+
+def drop_duplicates():
+    """
+    去重：某些host有多个人工权威评分
+    """
+    import pandas as pd
+    data_df=pd.read_excel('/Users/renyu/Desktop/authority_mannual.xlsx')
+    data_df2=data_df.drop_duplicates(subset=['host'],keep='first')
+    data_df2.to_csv('/Users/renyu/Desktop/authority_mannual_drop_duplicates.csv', index=False)
+    print(1)
+
+def merge_excel_site_quality():
+    #/Users/renyu/Downloads 20221118  20221130  20221206  20221213  20221220  20221227  20230104  20220111
+    import pandas as pd
+    df1 = pd.read_excel('/Users/renyu/Downloads/第一周期拟合结果.xlsx')
+    df1 = df1[['_id','url','质量分','规模分类','内容分类','行业分类']]
+    df1.columns = ['id','url','质量分','规模分类','内容分类','行业分类']
+    df1['ds'] = '20221118'
+
+    df2 = pd.read_excel('/Users/renyu/Downloads/拟合数据【11.21-11.30】离线站点.xlsx')
+    df2.columns = ['id','url','质量分','规模分类','内容分类','行业分类']
+    df2['ds'] = '20221130'
+
+    df3 = pd.read_excel('/Users/renyu/Downloads/拟合数据【12.01-12.06】离线站点.xlsx', sheet_name='Sheet1')
+    df3 = df3[['_id','url','质量分','规模分类','内容分类','行业分类']]
+    df3.columns = ['id','url','质量分','规模分类','内容分类','行业分类']
+    df3['ds'] = '20221206'
+
+    df4 = pd.read_excel('/Users/renyu/Downloads/拟合数据【12.07-12.13】离线站点.xlsx')
+    df4 = df4[['_id','url','质量分','规模分类','内容分类','行业分类']]
+    df4.columns = ['id','url','质量分','规模分类','内容分类','行业分类']
+    df4['ds'] = '20221213'
+
+    df5 = pd.read_excel('/Users/renyu/Downloads/【12.14-12.20】离线站点拟合数据.xlsx')
+    df5 = df5[['_id','url','质量分','规模分类','内容分类','行业分类']]
+    df5.columns = ['id','url','质量分','规模分类','内容分类','行业分类']
+    df5['ds'] = '20221220'
+
+    df6 = pd.read_excel('/Users/renyu/Downloads/【12.21-12.27】离线站点拟合数据.xlsx')
+    df6 = df6[['_id','url','质量分','规模分类','内容分类','行业分类']]
+    df6.columns = ['id','url','质量分','规模分类','内容分类','行业分类']
+    df6['ds'] = '20221227'
+
+    df7 = pd.read_excel('/Users/renyu/Downloads/【12.28-1.4】离线站点拟合数据.xlsx')
+    df7 = df7[['_id','url','质量分','规模分类','内容分类','行业分类']]
+    df7.columns = ['id','url','质量分','规模分类','内容分类','行业分类']
+    df7['ds'] = '20230104'
+
+    df8 = pd.read_excel('/Users/renyu/Downloads/【1.4-1.11】离线站点拟合数据.xlsx', sheet_name='拟合数据')
+    df8 = df8[['_id','url','质量分','规模分类','内容分类','行业分类']]
+    df8.columns = ['id','url','质量分','规模分类','内容分类','行业分类']
+    df8['ds'] = '20220111'
+
+    df_concated = pd.concat([df1,df2,df3,df4,df5,df6,df7,df8])
+    # df_concated.to_csv('/Users/renyu/Downloads/offline_site_fit_data_merged.csv', index=False, encoding='utf-8')
+    df_concated.to_excel('/Users/renyu/Downloads/offline_site_fit_data_merged.xlsx', index=False)
+
+    groups = df_concated.groupby(by='质量分')
+    for group in groups:
+        group[1]['采样']=0
+        group[1]['权威分']=''
+        samples= group[1].sample(n=200,replace=True,random_state=123,axis=0)
+        samples['采样']=1
+        samples.to_excel('/Users/renyu/Downloads/samples.xlsx')
+        merged = pd.merge(group[1],samples,on='url')
+        merged = merged.drop_duplicates(subset=['url'],keep='last')
+        print(1)
+        
+
+    print(1)
+
+
+
+def main():
+    # drop_duplicates()
+    # merge_feature()
+    # get_score()
+    merge_excel_site_quality()
+
+main()
