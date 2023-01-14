@@ -1,0 +1,6 @@
+[{'ip属地': [{'end': 5113, 'probability': 0.854475, 'start': 5111, 'text': '北京'}],
+  '简介': [{'end': 6389, 'probability': 0.54849297, 'start': 6386, 'text': '新势力'},
+         {'end': 19106,
+          'probability': 0.58190835,
+          'start': 19104,
+          'text': '知乎'}]}]

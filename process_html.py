@@ -19,9 +19,9 @@ host_list=[
     "https://www.ixigua.com/home/77121077814/",
     "https://www.mafengwo.cn/u/10024.html"
 ]
-schema =['用户名','作者','简介','签名', 'ip属地','粉丝数','关注数','获赞数','内容领域','作品']
+schema =['用户名','简介','签名', 'ip属地','粉丝数','关注数','获赞数']
 
-def get_html(url):
+def get_html(url= 'https://www.ixigua.com/home/77121077814/?wid_try=1'):
     from selenium.webdriver.chrome.options import Options
     from selenium import webdriver
     import time
@@ -34,17 +34,12 @@ def get_html(url):
     chrome_driver="./chromedriver" #路径不能省略'./'
     driver = webdriver.Chrome(executable_path=chrome_driver, options=options)
     driver.get(url)
-    time.sleep(4)
+    time.sleep(8)
     # wait=WebDriverWait(driver,10)
     resp=driver.page_source
 
     with open('html/'+url.split('//')[-1].split("/")[0]+'.txt','w') as f:
         f.write(resp)
-    # with open('html/'+url.split('//')[-1].split("/")[0]+'.txt','r+') as f:    
-    #     content = f.read()    
-    #     f.seek(0) #get to the first position
-    #     f.write("#coding:utf-8" + '\n' + content)
-    
     driver.close()
 
     # headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'}
@@ -64,16 +59,16 @@ def get_html(url):
 
 def re_uie(atxt):
     print("=========>>正则处理网页...")
-    with open(atxt,encoding='utf-8') as file_object:
+    with open(atxt) as file_object:
         contents = file_object.read()
         #^<.*>$
         #<.*?>
         contents = re.sub(r'<.*?>', '', contents)
-        #匹配括号里的内容包括括号
-        # contents = re.sub(r'(\{)[^}]*(\})', '', contents)
-        # contents = re.sub(r'(\[)[^}]*(\])', '', contents)
-        # contents = re.sub(r'(\()[^}]*(\))', '', contents)
-        # contents = re.sub(r'(\.)[^}]*(\.)', '', contents)
+        #匹配括号里的内容包括括号，小括号是子表达式，只是为了可读性
+        contents = re.sub(r'(\{)[^}]*(\})', '', contents)
+        contents = re.sub(r'(\[)[^}]*(\])', '', contents)
+        contents = re.sub(r'(\()[^}]*(\))', '', contents)
+        contents = re.sub(r'(\.)[^}]*(\.)', '', contents)
         # contents = re.sub(r'(?m)^\s*#.*$', '', contents)
         # contents = re.sub(r'(?m)^\s*var.*$', '', contents)
         # contents = re.sub(r'(?m)\s*[.!@/${}*:-].*$', '', contents)
@@ -87,7 +82,7 @@ def re_uie(atxt):
         # contents = re.sub(r"[#.]+[\w* .,-{}'()]*", '', contents)
         # contents = str(re.findall(r'<.*>(.*?)</.*>', contents))
         # contents = re.sub(r'\n{2,}', '\n', contents)
-    with open(atxt[0:-4] +'_1.txt','w') as f:
+    with open('html_txt/'+atxt[4:],'w') as f:
         f.write(contents)
     ##.*
     #var.*
@@ -97,7 +92,9 @@ def re_uie(atxt):
     match()函数是从string的开始位置查找，找不到返回None。search()会扫描整个string，然后返回第一个成功的匹配。
     """
     # print(re.search("cuiyunnan", contents).group())
-    uie(contents)
+    uie(contents,atxt)
+    # with open('html_user/'+atxt[4:], 'w') as f:
+    #     f.write(html_user)
 
 def xpath_uie(atxt):
     with open(atxt) as file_object:
@@ -106,28 +103,32 @@ def xpath_uie(atxt):
     text = ' '.join(tree.xpath('/html/body/div[1]/div/main/div/div[1]/div/div[2]/div/div[2]/div[1]/h1/span/text()'))
     print(text)
 
-def uie(body):
-    print("=========>>网页信息抽取...")
+def uie(body,txt):
+    print("=========>>提取网页信息...")
     ie = UIEPredictor(model='uie-base', schema=schema)
-    pprint(ie(body)) # Better print results using pprint
+    f= open('html_user/'+txt[4:], 'w') 
+    pprint(ie(body), stream=f) # Better print results using pprint
+    f.close()
 
 def main():         
-    os.system("rm html/*")
-    for host in host_list:
-        txt='html/'+host.split('//')[-1]+'.txt'#.split("/")[0]
-        #--step1 爬取html源代码
-        if not os.path.exists(txt):
-            print('not exist: ',txt)
-            try:
-                get_html(host)
-            except:
-                pass
-        #--step2 提取文本内容
-        if os.path.exists(txt):
-            try:
-                re_uie(txt)
-            except:
-                pass
-    # re_uie('html/a.mp.uc.cn.txt')
+    # os.system("rm html/*")
+    # os.system("rm html_txt/*")
+    # os.system("rm html_user/*")
+    # for host in host_list:
+    #     txt='html/'+host.split('//')[-1].split("/")[0]+'.txt'
+    #     #--step1 爬取html源代码
+    #     if not os.path.exists(txt):
+    #         print('not exist: ',txt)
+    #         try:
+    #             get_html(host)
+    #         except:
+    #             pass
+    #     #--step2 提取文本内容
+    #     if os.path.exists(txt):
+    #         try:
+    #             re_uie(txt)
+    #         except:
+    #             pass
+    re_uie('html/a.mp.uc.cn.txt')
 
 main()

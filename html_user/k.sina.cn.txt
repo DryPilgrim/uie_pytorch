@@ -1,0 +1,2 @@
+[{'简介': [{'end': 48, 'probability': 0.5627383, 'start': 44, 'text': '新浪新闻'}],
+  '获赞数': [{'end': 85, 'probability': 0.4010253, 'start': 81, 'text': '5.0分'}]}]
