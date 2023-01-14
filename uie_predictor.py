@@ -20,7 +20,8 @@ import six
 import math
 import argparse
 import os.path
-
+import sys
+sys.path.append("uie_pytorch/")
 from utils import logger, get_bool_ids_greater_than, get_span, get_id_and_prob, cut_chinese_sent, dbc2sbc
 
 
